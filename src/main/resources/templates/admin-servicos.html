@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serviços | Administração</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav">
+            <div class="brand">
+                <span class="brand-mark">S</span>
+                <div>
+                    <strong>Senhores da Navalha</strong>
+                    <small>Administração</small>
+                </div>
+            </div>
+            <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+            <nav class="nav-menu">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/servicos">Serviços</a>
+                <a href="/admin/barbeiros">Barbeiros</a>
+                <a href="/admin/configuracoes">Configurações</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-shell">
+        <section class="agenda-panel">
+            <h1>Gerenciar serviços</h1>
+            <div class="cards-grid" style="margin-top:1.5rem;">
+                <div class="stat-card" th:each="servico : ${servicos}">
+                    <span th:text="${servico.nome}">Corte</span>
+                    <strong th:text="${'R$ ' + servico.valor}">R$ 0,00</strong>
+                    <small th:text="${servico.duracao + ' min'}" style="display:block; color: var(--muted); margin-top:0.5rem;">45 min</small>
+                    <button class="btn btn-outline" type="button" style="margin-top:1rem; width:100%;"
+                            th:attr="data-id=${servico.id}, data-nome=${servico.nome}, data-valor=${servico.valor}, data-duracao=${servico.duracao}, data-descricao=${servico.descricao}"
+                            onclick="openEditModal(this)">Editar</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="editModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); place-items:center; z-index:30;">
+        <div style="width:min(500px,90vw); background:#151515; border:1px solid rgba(212,175,55,0.35); border-radius:22px; padding:1.5rem;">
+            <h3 style="margin-top:0;">Editar serviço</h3>
+            <form id="editServiceForm" style="display:grid; gap:1rem;">
+                <input type="hidden" id="editId">
+                <label>
+                    <span>Nome</span>
+                    <input type="text" id="editNome" required>
+                </label>
+                <label>
+                    <span>Descrição</span>
+                    <textarea id="editDescricao" rows="3" required></textarea>
+                </label>
+                <label>
+                    <span>Valor</span>
+                    <input type="number" id="editValor" step="0.01" min="0" required>
+                </label>
+                <label>
+                    <span>Duração (min)</span>
+                    <input type="number" id="editDuracao" min="15" step="5" required>
+                </label>
+                <div style="display:flex; gap:1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
+                    <button type="button" class="btn btn-outline" style="flex:1;" onclick="closeEditModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(button) {
+            const modal = document.getElementById('editModal');
+            document.getElementById('editId').value = button.dataset.id;
+            document.getElementById('editNome').value = button.dataset.nome;
+            document.getElementById('editDescricao').value = button.dataset.descricao || '';
+            document.getElementById('editValor').value = button.dataset.valor;
+            document.getElementById('editDuracao').value = button.dataset.duracao;
+            modal.style.display = 'grid';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        document.getElementById('editServiceForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const id = document.getElementById('editId').value;
+            const payload = {
+                nome: document.getElementById('editNome').value,
+                descricao: document.getElementById('editDescricao').value,
+                valor: Number(document.getElementById('editValor').value),
+                duracao: Number(document.getElementById('editDuracao').value)
+            };
+
+            const response = await fetch(`/api/servicos/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                closeEditModal();
+                window.location.reload();
+            } else {
+                alert(data.message || 'Erro ao editar serviço.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico | Barbearia</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav">
+            <div class="brand">
+                <span class="brand-mark">S</span>
+                <div>
+                    <strong>Senhores da Navalha</strong>
+                    <small>Histórico</small>
+                </div>
+            </div>
+            <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+            <nav class="nav-menu">
+                <a href="/cliente/dashboard">Dashboard</a>
+                <a href="/cliente/historico">Histórico</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-shell">
+        <section class="agenda-panel">
+            <h1>Seu histórico</h1>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Serviço</th>
+                        <th>Barbeiro</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="agendamento : ${historico}">
+                        <td th:text="${agendamento.servico.nome}">Corte</td>
+                        <td th:text="${agendamento.barbeiro.nome}">Rafael</td>
+                        <td th:text="${agendamento.dataAgendamento}">2026-09-23</td>
+                        <td th:text="${agendamento.horario}">18:30</td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${agendamento.status.name() == 'CANCELADO'} ? ' cancelled' : (${agendamento.status.name() == 'CONFIRMADO'} ? ' confirmed' : (${agendamento.status.name() == 'CONCLUIDO'} ? ' concluded' : ' pending'))"
+                                  th:text="${agendamento.status}">Pendente</span>
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-danger btn-small"
+                                    th:if="${agendamento.status.name() != 'CANCELADO'}"
+                                    th:attr="data-cancel-id=${agendamento.id}">
+                                Cancelar
+                            </button>
+                            <span class="muted-text" th:if="${agendamento.status.name() == 'CANCELADO'}">Cancelado</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('[data-cancel-id]').forEach(function (button) {
+                button.addEventListener('click', async function () {
+                    const id = this.dataset.cancelId;
+                    const confirmed = window.confirm('Deseja realmente cancelar este corte?');
+                    if (!confirmed) return;
+
+                    try {
+                        const response = await fetch('/api/agendamentos/' + id + '/cancelar', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+
+                        const result = await response.json();
+                        if (response.ok && result.success) {
+                            const row = this.closest('tr');
+                            const badge = row.querySelector('.status-badge');
+                            const actionCell = row.querySelector('td:last-child');
+                            if (badge) {
+                                badge.textContent = 'CANCELADO';
+                                badge.className = 'status-badge cancelled';
+                            }
+                            if (actionCell) {
+                                actionCell.innerHTML = '<span class="muted-text">Cancelado</span>';
+                            }
+                            return;
+                        }
+
+                        alert(result.message || 'Não foi possível cancelar o agendamento.');
+                    } catch (error) {
+                        alert('Erro ao cancelar o agendamento.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

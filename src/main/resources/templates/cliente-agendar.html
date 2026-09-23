@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar horário | Barbearia</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav">
+            <div class="brand">
+                <span class="brand-mark">S</span>
+                <div>
+                    <strong>Senhores da Navalha</strong>
+                    <small>Agendamento</small>
+                </div>
+            </div>
+            <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+            <nav class="nav-menu">
+                <a href="/cliente/dashboard">Dashboard</a>
+                <a href="/cliente/agendar">Agendar</a>
+                <a href="/cliente/historico">Histórico</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-shell">
+        <section class="agenda-panel">
+            <h1>Agendar corte</h1>
+            <p>Olá, <strong th:text="${usuario.nome}">Cliente</strong>. Escolha o serviço, barbeiro e horário abaixo.</p>
+
+            <form id="bookingForm" class="booking-form" style="display:grid; gap:1rem; margin-top:1.5rem;">
+                <div>
+                    <label for="servico">Serviço</label>
+                    <select id="servico" name="servico" required>
+                        <option value="">Selecione um serviço</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="barbeiro">Barbeiro</label>
+                    <select id="barbeiro" name="barbeiro" required>
+                        <option value="">Selecione um barbeiro</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="data">Data</label>
+                    <input type="date" id="data" name="data" required>
+                </div>
+
+                <div>
+                    <label for="horario">Horário</label>
+                    <select id="horario" name="horario" required>
+                        <option value="">Selecione um horário</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary full" id="confirmBooking">Confirmar agendamento</button>
+            </form>
+
+            <div id="bookingMessage" style="display:none; margin-top:1rem; padding:0.9rem 1rem; border-radius:12px; background:rgba(46,194,126,.12); border:1px solid rgba(46,194,126,.4); color:#dff9ea;"></div>
+        </section>
+    </main>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const servicoSelect = document.getElementById('servico');
+            const barbeiroSelect = document.getElementById('barbeiro');
+            const dataInput = document.getElementById('data');
+            const horarioSelect = document.getElementById('horario');
+            const bookingMessage = document.getElementById('bookingMessage');
+            const bookingForm = document.getElementById('bookingForm');
+
+            function showMessage(message, isError = false) {
+                bookingMessage.textContent = message;
+                bookingMessage.style.display = 'block';
+                bookingMessage.style.background = isError ? 'rgba(255,90,95,0.12)' : 'rgba(46,194,126,0.12)';
+                bookingMessage.style.borderColor = isError ? 'rgba(255,90,95,0.4)' : 'rgba(46,194,126,0.4)';
+                bookingMessage.style.color = isError ? '#ffe2e3' : '#dff9ea';
+            }
+
+            function setMinDate() {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                dataInput.min = `${yyyy}-${mm}-${dd}`;
+                dataInput.value = `${yyyy}-${mm}-${dd}`;
+            }
+
+            async function loadOptions() {
+                try {
+                    const [servicosRes, barbeirosRes] = await Promise.all([
+                        fetch('/api/servicos'),
+                        fetch('/api/barbeiros')
+                    ]);
+
+                    if (!servicosRes.ok || !barbeirosRes.ok) {
+                        throw new Error('Erro ao carregar dados');
+                    }
+
+                    const servicos = await servicosRes.json();
+                    const barbeiros = await barbeirosRes.json();
+
+                    barbeiroSelect.innerHTML = '<option value="">Selecione um barbeiro</option>';
+                    servicoSelect.innerHTML = '<option value="">Selecione um serviço</option>';
+
+                    barbeiros.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.nome + ' - ' + item.especialidade;
+                        barbeiroSelect.appendChild(option);
+                    });
+
+                    servicos.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = `${item.nome} - R$ ${Number(item.valor).toFixed(2)}`;
+                        servicoSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    showMessage('Não foi possível carregar serviços e barbeiros.', true);
+                }
+            }
+
+            async function loadDisponibilidade() {
+                const barbeiroId = barbeiroSelect.value;
+                const data = dataInput.value;
+                horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
+
+                if (!barbeiroId || !data) return;
+
+                try {
+                    const response = await fetch(`/api/agendamentos/disponibilidade?barbeiroId=${barbeiroId}&data=${data}`);
+                    const dataResponse = await response.json();
+                    const ocupados = new Set((dataResponse.ocupados || []).map(h => h.slice(0,5)));
+                    const todos = [
+                        '09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30',
+                        '13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30',
+                        '17:00','17:30','18:00','18:30','19:00'
+                    ];
+
+                    const disponiveis = todos.filter(h => !ocupados.has(h));
+                    if (!disponiveis.length) {
+                        horarioSelect.innerHTML = '<option value="">Sem horários disponíveis</option>';
+                        showMessage('Este dia está totalmente lotado para o barbeiro selecionado.', true);
+                        return;
+                    }
+
+                    disponiveis.forEach(h => {
+                        const option = document.createElement('option');
+                        option.value = h;
+                        option.textContent = h;
+                        horarioSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    showMessage('Não foi possível consultar a disponibilidade.', true);
+                }
+            }
+
+            barbeiroSelect.addEventListener('change', loadDisponibilidade);
+            dataInput.addEventListener('change', loadDisponibilidade);
+            setMinDate();
+            loadOptions();
+
+            bookingForm.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const token = localStorage.getItem('jwtToken');
+
+                if (!token) {
+                    showMessage('Sua sessão expirou. Faça login novamente.', true);
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const payload = {
+                    barbeiroId: barbeiroSelect.value,
+                    servicoId: servicoSelect.value,
+                    data: dataInput.value,
+                    horario: horarioSelect.value
+                };
+
+                if (!payload.barbeiroId || !payload.servicoId || !payload.data || !payload.horario) {
+                    showMessage('Preencha todos os campos antes de confirmar.', true);
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/agendamentos', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        showMessage('Agendamento realizado com sucesso!');
+                        bookingForm.reset();
+                        setMinDate();
+                        horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
+                        setTimeout(() => window.location.href = '/cliente/dashboard', 1200);
+                    } else {
+                        if (response.status === 401) {
+                            localStorage.removeItem('jwtToken');
+                            window.location.href = '/login';
+                            return;
+                        }
+                        showMessage(result.message || 'Não foi possível realizar o agendamento.', true);
+                    }
+                } catch (error) {
+                    showMessage('Erro ao confirmar o agendamento.', true);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

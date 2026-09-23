@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu painel | Barbearia</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav">
+            <div class="brand">
+                <span class="brand-mark">S</span>
+                <div>
+                    <strong>Senhores da Navalha</strong>
+                    <small>Painel do cliente</small>
+                </div>
+            </div>
+            <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+            <nav class="nav-menu">
+                <a href="/cliente/dashboard">Dashboard</a>
+                <a href="/cliente/historico">Histórico</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-shell container">
+        <section class="panel-intro">
+            <h1>Olá, <span th:text="${usuario.nome}">Cliente</span></h1>
+            <p>Seu espaço para gerenciar agendamentos e acompanhar seu histórico.</p>
+        </section>
+
+        <section class="cards-grid">
+            <div class="stat-card">
+                <span>Próximos agendamentos</span>
+                <strong th:text="${#lists.size(historico)}">0</strong>
+            </div>
+            <div class="stat-card accent">
+                <span>Serviços</span>
+                <strong>Premium</strong>
+            </div>
+            <div class="stat-card">
+                <span>Status</span>
+                <strong>Ativo</strong>
+            </div>
+        </section>
+
+        <div class="cta-group" style="margin: 1.5rem 0;">
+            <a class="btn btn-primary" href="/cliente/agendar">Agendar corte</a>
+            <a class="btn btn-outline" href="/cliente/historico">Ver histórico</a>
+        </div>
+
+        <section class="agenda-panel">
+            <h2>Histórico recente</h2>
+            <div th:if="${#lists.isEmpty(historico)}" class="empty-state">
+                Nenhum agendamento encontrado.
+            </div>
+            <ul class="history-list" th:unless="${#lists.isEmpty(historico)}">
+                <li th:each="item : ${historico}">
+                    <div>
+                        <strong th:text="${item.servico.nome}">Corte</strong>
+                        <small th:text="${item.dataAgendamento} + ' • ' + ${item.horario}">Data</small>
+                    </div>
+                    <span class="tag" th:text="${item.status}">Pendente</span>
+                </li>
+            </ul>
+        </section>
+    </main>
+</body>
+</html>

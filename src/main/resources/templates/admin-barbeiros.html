@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbeiros | Administração</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav">
+            <div class="brand">
+                <span class="brand-mark">S</span>
+                <div>
+                    <strong>Senhores da Navalha</strong>
+                    <small>Administração</small>
+                </div>
+            </div>
+            <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+            <nav class="nav-menu">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/servicos">Serviços</a>
+                <a href="/admin/barbeiros">Barbeiros</a>
+                <a href="/admin/configuracoes">Configurações</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-shell">
+        <section class="agenda-panel">
+            <h1>Equipe</h1>
+            <div class="team-grid">
+                <article class="team-card" th:each="barbeiro : ${barbeiros}">
+                    <div class="avatar">B</div>
+                    <h3 th:text="${barbeiro.nome}">Barbeiro</h3>
+                    <p th:text="${barbeiro.especialidade}">Especialidade</p>
+                </article>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

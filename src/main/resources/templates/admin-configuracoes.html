@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações | Administração</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav">
+            <div class="brand">
+                <span class="brand-mark">S</span>
+                <div>
+                    <strong>Senhores da Navalha</strong>
+                    <small>Administração</small>
+                </div>
+            </div>
+            <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+            <nav class="nav-menu">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/servicos">Serviços</a>
+                <a href="/admin/barbeiros">Barbeiros</a>
+                <a href="/admin/configuracoes">Configurações</a>
+                <a href="/logout">Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-shell">
+        <section class="agenda-panel">
+            <h1>Configurações do negócio</h1>
+            <form id="configForm" style="display:grid; gap:1rem; margin-top:1.5rem;">
+                <div>
+                    <label for="nomeLoja">Nome da loja</label>
+                    <input type="text" id="nomeLoja" name="nomeLoja" th:value="${configuracao.nomeLoja}" required>
+                </div>
+                <div>
+                    <label for="telefone">Telefone</label>
+                    <input type="text" id="telefone" name="telefone" th:value="${configuracao.telefone}" required>
+                </div>
+                <div>
+                    <label for="endereco">Endereço</label>
+                    <input type="text" id="endereco" name="endereco" th:value="${configuracao.endereco}" required>
+                </div>
+                <div>
+                    <label for="diasFuncionamento">Dias de funcionamento</label>
+                    <input type="text" id="diasFuncionamento" name="diasFuncionamento" th:value="${configuracao.diasFuncionamento}" required>
+                </div>
+                <div class="two-columns" style="display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:1rem;">
+                    <div>
+                        <label for="horarioAbertura">Hora de abertura</label>
+                        <input type="time" id="horarioAbertura" name="horarioAbertura" th:value="${configuracao.horarioAbertura}" required>
+                    </div>
+                    <div>
+                        <label for="horarioFechamento">Hora de fechamento</label>
+                        <input type="time" id="horarioFechamento" name="horarioFechamento" th:value="${configuracao.horarioFechamento}" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="intervaloMinutos">Intervalo entre atendimentos (min)</label>
+                    <input type="number" id="intervaloMinutos" name="intervaloMinutos" th:value="${configuracao.intervaloMinutos}" min="15" max="120" required>
+                </div>
+                <div>
+                    <label for="textoBanner">Texto do banner</label>
+                    <input type="text" id="textoBanner" name="textoBanner" th:value="${configuracao.textoBanner}" required>
+                </div>
+                <button type="submit" class="btn btn-primary full">Salvar configurações</button>
+            </form>
+            <div id="configStatus" style="display:none; margin-top:1rem; padding:0.9rem 1rem; border-radius:12px;"></div>
+        </section>
+    </main>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('configForm');
+            const status = document.getElementById('configStatus');
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const payload = {
+                    nomeLoja: document.getElementById('nomeLoja').value,
+                    telefone: document.getElementById('telefone').value,
+                    endereco: document.getElementById('endereco').value,
+                    horarioAbertura: document.getElementById('horarioAbertura').value,
+                    horarioFechamento: document.getElementById('horarioFechamento').value,
+                    intervaloMinutos: Number(document.getElementById('intervaloMinutos').value),
+                    diasFuncionamento: document.getElementById('diasFuncionamento').value,
+                    textoBanner: document.getElementById('textoBanner').value
+                };
+
+                const response = await fetch('/admin/configuracoes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                status.style.display = 'block';
+                status.textContent = data.message || 'Configurações salvas.';
+                status.style.background = 'rgba(46,194,126,0.12)';
+                status.style.border = '1px solid rgba(46,194,126,0.5)';
+                status.style.color = '#dff9ea';
+            });
+        });
+    </script>
+</body>
+</html>
