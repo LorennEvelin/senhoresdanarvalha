@@ -51,10 +51,11 @@
                         <strong th:text="${servico.nome}">Corte</strong>
                         <small th:text="${servico.descricao}">Descrição</small>
                     </div>
-                    <span class="tag" th:text="${servico.valor}">R$ 0,00</span>
+                    <span class="tag" th:text="${'R$ ' + #numbers.formatDecimal(servico.valor, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                 </li>
             </ul>
         </section>
     </main>
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>

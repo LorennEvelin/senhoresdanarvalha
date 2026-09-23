@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -39,6 +40,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.PUT, "/api/servicos/**").hasRole("ADMIN")
                 .requestMatchers(
                     "/",
                     "/home",
@@ -56,7 +58,8 @@ public class SecurityConfig {
                     "/css/**",
                     "/js/**",
                     "/assets/**",
-                    "/favicon.ico"
+                    "/favicon.ico",
+                    "/error"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/cliente/**").hasRole("CLIENTE")

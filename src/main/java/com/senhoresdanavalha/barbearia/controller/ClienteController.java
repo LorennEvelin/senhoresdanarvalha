@@ -1,6 +1,7 @@
 package com.senhoresdanavalha.barbearia.controller;
 
 import com.senhoresdanavalha.barbearia.model.Agendamento;
+import com.senhoresdanavalha.barbearia.model.StatusAgendamento;
 import com.senhoresdanavalha.barbearia.model.Usuario;
 import com.senhoresdanavalha.barbearia.repository.AgendamentoRepository;
 import com.senhoresdanavalha.barbearia.repository.UsuarioRepository;
@@ -11,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -32,8 +34,15 @@ public class ClienteController {
         Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow();
 
         List<Agendamento> historico = agendamentoRepository.findByUsuarioOrderByDataAgendamentoDescHorarioDesc(usuario);
+        LocalDateTime agora = LocalDateTime.now();
+        long proximos = historico.stream()
+            .filter(agendamento -> agendamento.getStatus() != StatusAgendamento.CANCELADO
+                && agendamento.getStatus() != StatusAgendamento.CONCLUIDO)
+            .filter(agendamento -> LocalDateTime.of(agendamento.getDataAgendamento(), agendamento.getHorario()).isAfter(agora))
+            .count();
         model.addAttribute("usuario", usuario);
         model.addAttribute("historico", historico);
+        model.addAttribute("proximos", proximos);
         return "cliente-dashboard";
     }
 

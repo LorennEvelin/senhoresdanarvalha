@@ -32,26 +32,18 @@
     </header>
 
     <main class="container page-shell">
-        <section class="team-grid">
-            <article class="team-card">
-                <img class="team-photo" src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=900&q=80" alt="Barbeiro Rafael">
-                <div class="avatar">R</div>
-                <h3>Rafael</h3>
-                <p>Especialista em cortes clássicos e barbas impecáveis.</p>
-            </article>
-            <article class="team-card">
-                <img class="team-photo" src="https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80" alt="Barbeiro Mateus">
-                <div class="avatar">M</div>
-                <h3>Mateus</h3>
-                <p>Focado em acabamento premium e cortes modernos.</p>
-            </article>
-            <article class="team-card">
-                <img class="team-photo" src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=80" alt="Barbeiro Thiago">
-                <div class="avatar">T</div>
-                <h3>Thiago</h3>
-                <p>Experiência em serviços de estética e design facial.</p>
+        <section class="team-grid"
+                 th:with="fotos=${ {'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=900&q=80',
+                                   'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80',
+                                   'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=80'} }">
+            <article class="team-card" th:each="barbeiro, stat : ${barbeiros}">
+                <img class="team-photo" th:src="${fotos[stat.index % 3]}" th:alt="${'Barbeiro ' + barbeiro.nome}">
+                <div class="avatar" th:text="${#strings.substring(barbeiro.nome, 0, 1)}">R</div>
+                <h3 th:text="${barbeiro.nome}">Rafael</h3>
+                <p th:text="${barbeiro.especialidade}">Especialista em cortes clássicos e barbas impecáveis.</p>
             </article>
         </section>
     </main>
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>

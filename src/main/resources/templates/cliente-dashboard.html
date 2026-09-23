@@ -19,6 +19,7 @@
             <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
             <nav class="nav-menu">
                 <a href="/cliente/dashboard">Dashboard</a>
+                <a href="/cliente/agendar">Agendar</a>
                 <a href="/cliente/historico">Histórico</a>
                 <a href="/logout">Sair</a>
             </nav>
@@ -34,7 +35,7 @@
         <section class="cards-grid">
             <div class="stat-card">
                 <span>Próximos agendamentos</span>
-                <strong th:text="${#lists.size(historico)}">0</strong>
+                <strong th:text="${proximos}">0</strong>
             </div>
             <div class="stat-card accent">
                 <span>Serviços</span>
@@ -67,5 +68,6 @@
             </ul>
         </section>
     </main>
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>

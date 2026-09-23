@@ -102,26 +102,15 @@
                 <p class="eyebrow center">Nossa equipe</p>
                 <h2>Profissionais que entendem de estilo.</h2>
             </div>
-            <div class="container barber-showcase">
-                <article class="barber-card">
-                    <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=900&q=80" alt="Barbeiro Rafael">
+            <div class="container barber-showcase"
+                 th:with="fotos=${ {'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=900&q=80',
+                                   'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80',
+                                   'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=80'} }">
+                <article class="barber-card" th:each="barbeiro, stat : ${barbeiros}">
+                    <img th:src="${fotos[stat.index % 3]}" th:alt="${'Barbeiro ' + barbeiro.nome}">
                     <div class="barber-info">
-                        <h3>Rafael</h3>
-                        <p>Cortes clássicos</p>
-                    </div>
-                </article>
-                <article class="barber-card">
-                    <img src="https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80" alt="Barbeiro Mateus">
-                    <div class="barber-info">
-                        <h3>Mateus</h3>
-                        <p>Estilo moderno</p>
-                    </div>
-                </article>
-                <article class="barber-card">
-                    <img src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=80" alt="Barbeiro Thiago">
-                    <div class="barber-info">
-                        <h3>Thiago</h3>
-                        <p>Design facial</p>
+                        <h3 th:text="${barbeiro.nome}">Rafael</h3>
+                        <p th:text="${barbeiro.especialidade}">Cortes clássicos</p>
                     </div>
                 </article>
             </div>
@@ -162,47 +151,14 @@
                 <h2>Opções para cada estilo e necessidade.</h2>
             </div>
             <div class="container cards-grid">
-                <article class="price-card">
-                    <span class="tag">Mais pedido</span>
-                    <h3>Corte Clássico</h3>
-                    <div class="price">R$ 55</div>
+                <article class="price-card" th:each="servico, stat : ${servicos}" th:classappend="${stat.index == 1} ? ' featured'">
+                    <span class="tag" th:if="${stat.index == 0}">Mais pedido</span>
+                    <span class="tag" th:if="${stat.index == 1}">Recomendado</span>
+                    <h3 th:text="${servico.nome}">Corte Clássico</h3>
+                    <div class="price" th:text="${'R$ ' + #numbers.formatDecimal(servico.valor, 1, 'POINT', 2, 'COMMA')}">R$ 55,00</div>
                     <ul>
-                        <li>Estilo personalizado</li>
-                        <li>Acabamento premium</li>
-                        <li>Duração: 45 min</li>
-                    </ul>
-                    <a href="/cadastro" class="btn btn-primary full">Agendar</a>
-                </article>
-                <article class="price-card featured">
-                    <span class="tag">Recomendado</span>
-                    <h3>Corte + Barba</h3>
-                    <div class="price">R$ 85</div>
-                    <ul>
-                        <li>Visão completa</li>
-                        <li>Modelagem de barba</li>
-                        <li>Duração: 60 min</li>
-                    </ul>
-                    <a href="/cadastro" class="btn btn-primary full">Agendar</a>
-                </article>
-                <article class="price-card">
-                    <span class="tag">Premium</span>
-                    <h3>Barba + Hidratação</h3>
-                    <div class="price">R$ 70</div>
-                    <ul>
-                        <li>Modelagem precisa</li>
-                        <li>Hidratação facial</li>
-                        <li>Duração: 50 min</li>
-                    </ul>
-                    <a href="/cadastro" class="btn btn-primary full">Agendar</a>
-                </article>
-                <article class="price-card">
-                    <span class="tag">Completo</span>
-                    <h3>Combo Executivo</h3>
-                    <div class="price">R$ 120</div>
-                    <ul>
-                        <li>Corte + barba + hidratação</li>
-                        <li>Resultado refinado</li>
-                        <li>Duração: 90 min</li>
+                        <li th:text="${servico.descricao}">Estilo personalizado</li>
+                        <li th:text="${'Duração: ' + servico.duracao + ' min'}">Duração: 45 min</li>
                     </ul>
                     <a href="/cadastro" class="btn btn-primary full">Agendar</a>
                 </article>
@@ -266,5 +222,6 @@
             </div>
         </div>
     </footer>
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>

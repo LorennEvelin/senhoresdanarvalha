@@ -7,6 +7,7 @@ import com.senhoresdanavalha.barbearia.model.Usuario;
 import com.senhoresdanavalha.barbearia.repository.BarbeiroRepository;
 import com.senhoresdanavalha.barbearia.repository.ServicoRepository;
 import com.senhoresdanavalha.barbearia.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -20,15 +21,21 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final ServicoRepository servicoRepository;
     private final BarbeiroRepository barbeiroRepository;
     private final PasswordEncoder passwordEncoder;
+    private final String adminSenha;
+    private final String clienteSenha;
 
     public DatabaseSeeder(UsuarioRepository usuarioRepository,
                           ServicoRepository servicoRepository,
                           BarbeiroRepository barbeiroRepository,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          @Value("${app.seed.admin-senha}") String adminSenha,
+                          @Value("${app.seed.cliente-senha}") String clienteSenha) {
         this.usuarioRepository = usuarioRepository;
         this.servicoRepository = servicoRepository;
         this.barbeiroRepository = barbeiroRepository;
         this.passwordEncoder = passwordEncoder;
+        this.adminSenha = adminSenha;
+        this.clienteSenha = clienteSenha;
     }
 
     @Override
@@ -38,7 +45,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             admin.setNome("Administrador");
             admin.setEmail("admin@senhoresdanavalha.com.br");
             admin.setTelefone("(11) 99999-0000");
-            admin.setSenha(passwordEncoder.encode("admin123"));
+            admin.setSenha(passwordEncoder.encode(adminSenha));
             admin.setTipoUsuario(TipoUsuario.ADMIN);
             usuarioRepository.save(admin);
         }
@@ -48,7 +55,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             clienteTeste.setNome("Cliente Teste");
             clienteTeste.setEmail("cliente.teste@teste.com");
             clienteTeste.setTelefone("(11) 98888-7777");
-            clienteTeste.setSenha(passwordEncoder.encode("cliente123"));
+            clienteTeste.setSenha(passwordEncoder.encode(clienteSenha));
             clienteTeste.setTipoUsuario(TipoUsuario.CLIENTE);
             usuarioRepository.save(clienteTeste);
         }

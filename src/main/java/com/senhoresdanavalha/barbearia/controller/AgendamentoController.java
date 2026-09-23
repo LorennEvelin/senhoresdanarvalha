@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,10 @@ public class AgendamentoController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("data", localDate.toString());
-        response.put("ocupados", agendamentos.stream().map(Agendamento::getHorario).toList());
+        response.put("ocupados", agendamentos.stream()
+            .filter(agendamento -> agendamento.getStatus() != StatusAgendamento.CANCELADO)
+            .map(Agendamento::getHorario)
+            .toList());
         return ResponseEntity.ok(response);
     }
 
@@ -67,6 +71,12 @@ public class AgendamentoController {
             Long servicoId = Long.valueOf(payload.get("servicoId").toString());
             LocalDate data = LocalDate.parse(payload.get("data").toString());
             LocalTime horario = LocalTime.parse(payload.get("horario").toString());
+
+            if (LocalDateTime.of(data, horario).isBefore(LocalDateTime.now())) {
+                response.put("success", false);
+                response.put("message", "Não é possível agendar em uma data ou horário que já passou.");
+                return ResponseEntity.badRequest().body(response);
+            }
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             Usuario usuario = usuarioRepository.findByEmail(authentication.getName()).orElseThrow();

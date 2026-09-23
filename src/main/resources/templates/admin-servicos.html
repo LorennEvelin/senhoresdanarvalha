@@ -33,7 +33,7 @@
             <div class="cards-grid" style="margin-top:1.5rem;">
                 <div class="stat-card" th:each="servico : ${servicos}">
                     <span th:text="${servico.nome}">Corte</span>
-                    <strong th:text="${'R$ ' + servico.valor}">R$ 0,00</strong>
+                    <strong th:text="${'R$ ' + #numbers.formatDecimal(servico.valor, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
                     <small th:text="${servico.duracao + ' min'}" style="display:block; color: var(--muted); margin-top:0.5rem;">45 min</small>
                     <button class="btn btn-outline" type="button" style="margin-top:1rem; width:100%;"
                             th:attr="data-id=${servico.id}, data-nome=${servico.nome}, data-valor=${servico.valor}, data-duracao=${servico.duracao}, data-descricao=${servico.descricao}"
@@ -112,5 +112,6 @@
             }
         });
     </script>
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>

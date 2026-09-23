@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,6 +53,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(response);
         }
 
+        usuario.setId(null);
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuario.setTipoUsuario(TipoUsuario.CLIENTE);
         usuarioRepository.save(usuario);
@@ -70,9 +72,16 @@ public class AuthController {
         String email = payload.get("email");
         String senha = payload.get("senha");
 
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(email, senha)
-        );
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, senha)
+            );
+        } catch (AuthenticationException e) {
+            response.put("success", false);
+            response.put("message", "E-mail ou senha inválidos.");
+            return ResponseEntity.status(401).body(response);
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         request.getSession(true).setAttribute(

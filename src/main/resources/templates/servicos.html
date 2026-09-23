@@ -33,30 +33,14 @@
 
     <main class="container page-shell">
         <section class="cards-grid">
-            <article class="service-highlight">
-                <span class="icon">✂️</span>
-                <h3>Corte Masculino</h3>
-                <p>Estilo moderno e clássico com acabamento perfeito.</p>
-            </article>
-            <article class="service-highlight">
-                <span class="icon">🪒</span>
-                <h3>Barba</h3>
-                <p>Modelagem e hidratação para uma barba bem definida.</p>
-            </article>
-            <article class="service-highlight">
-                <span class="icon">💇</span>
-                <h3>Corte + Barba</h3>
-                <p>Combo completo para um visual impecável.</p>
-            </article>
-            <article class="service-highlight">
-                <span class="icon">🧴</span>
-                <h3>Sobrancelha</h3>
-                <p>Design delicado e alinhamento natural.</p>
-            </article>
-            <article class="service-highlight">
-                <span class="icon">🎨</span>
-                <h3>Pigmentação</h3>
-                <p>Detalhes que destacam a personalidade da sua aparência.</p>
+            <article class="service-highlight"
+                     th:each="servico, stat : ${servicos}"
+                     th:with="icones=${ {'✂️','🪒','💇','🧴','🎨'} }">
+                <span class="icon" th:text="${icones[stat.index % 5]}">✂️</span>
+                <h3 th:text="${servico.nome}">Corte Masculino</h3>
+                <p th:text="${servico.descricao}">Estilo moderno e clássico com acabamento perfeito.</p>
+                <p><strong th:text="${'R$ ' + #numbers.formatDecimal(servico.valor, 1, 'POINT', 2, 'COMMA')}">R$ 55,00</strong>
+                   · <span th:text="${servico.duracao + ' min'}">45 min</span></p>
             </article>
             <article class="service-highlight">
                 <span class="icon">✨</span>
@@ -65,5 +49,6 @@
             </article>
         </section>
     </main>
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>
