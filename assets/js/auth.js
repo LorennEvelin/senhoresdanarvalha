@@ -29,6 +29,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            // Volta para a página que pediu login (só páginas deste site, nada de links externos)
+            const voltar = new URLSearchParams(window.location.search).get('voltar');
+            if (voltar && /^[a-z-]+\.html$/.test(voltar) && voltar !== 'login.html') {
+                window.location.href = voltar;
+                return;
+            }
+
             const perfil = await App.perfil();
             window.location.href = perfil && perfil.tipo === 'ADMIN' ? 'admin.html' : 'cliente.html';
         });

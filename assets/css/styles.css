@@ -558,22 +558,36 @@ input {
     }
 }
 
-@media (max-width: 700px) {
+/* Cabeçalho com menu ☰ em celular e tablet */
+@media (max-width: 980px) {
+    .nav {
+        position: relative;
+        min-height: 70px;
+    }
+
     .nav-toggle {
         display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        padding: 0;
     }
 
     .nav-menu {
         position: absolute;
-        left: 1rem;
-        right: 1rem;
-        top: 78px;
+        left: 0;
+        right: 0;
+        top: calc(100% + 0.5rem);
         display: none;
         flex-direction: column;
-        background: rgba(12, 12, 12, 0.98);
+        align-items: stretch;
+        gap: 0.25rem;
+        background: #0c0c0c;
         border: 1px solid var(--border);
         border-radius: 16px;
-        padding: 1rem;
+        padding: 0.75rem;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.5);
         z-index: 20;
     }
 
@@ -581,11 +595,30 @@ input {
         display: flex;
     }
 
-    .nav {
-        justify-content: space-between;
-        position: relative;
+    .nav-menu > a {
+        padding: 0.8rem 0.75rem;
+        border-radius: 10px;
+        color: var(--text);
     }
 
+    .nav-menu > a:hover,
+    .nav-menu > a:focus-visible {
+        background: rgba(212,175,55,0.1);
+    }
+
+    .nav-menu .nav-actions {
+        flex-direction: row;
+        margin: 0.5rem 0 0;
+        padding-top: 0.75rem;
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-menu .nav-actions .btn {
+        flex: 1;
+    }
+}
+
+@media (max-width: 700px) {
     .stats,
     .benefits-grid,
     .cards-grid,
@@ -599,13 +632,15 @@ input {
         padding-top: 4rem;
     }
 
-    .cta-group,
-    .nav-actions {
+    .cta-group {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .btn {
+    .cta-group .btn,
+    form .btn,
+    .modal-actions .btn,
+    .cta-box .btn {
         width: 100%;
     }
 }
@@ -807,10 +842,6 @@ input:focus {
 }
 
 @media (max-width: 768px) {
-    nav {
-        display: none;
-    }
-
     .hero-grid,
     .three-columns,
     .cards-grid,
@@ -822,16 +853,6 @@ input:focus {
 
     .stats {
         grid-template-columns: 1fr;
-    }
-
-    .nav {
-        flex-wrap: wrap;
-        padding: 1rem 0;
-    }
-
-    .nav-actions {
-        width: 100%;
-        justify-content: flex-end;
     }
 }
 
@@ -960,4 +981,87 @@ input[type="date"] { color-scheme: dark; }
     left: 0;
     right: 0;
     z-index: 50;
+}
+
+/* Botões dentro do menu: o hover de link não pode mudar a cor do texto do botão */
+.nav-menu .nav-actions { margin-left: 0.6rem; }
+nav a.btn-primary:hover { color: #121212; }
+nav a.btn-outline:hover { color: var(--gold-soft); }
+
+/* Botões e campos: área de toque confortável e sem estourar o layout */
+.btn { white-space: nowrap; }
+.btn:disabled { cursor: not-allowed; transform: none; }
+.btn:focus-visible,
+.nav-toggle:focus-visible,
+select:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+}
+input, select, textarea { max-width: 100%; }
+.data-table select { min-width: 175px; padding: 0.6rem 0.8rem; }
+
+h1, h2, h3 { overflow-wrap: break-word; }
+
+/* Tabelas viram cartões no celular */
+@media (max-width: 700px) {
+    .table-scroll .tabela-cards { min-width: 0; }
+
+    .tabela-cards thead { display: none; }
+
+    .tabela-cards,
+    .tabela-cards tbody,
+    .tabela-cards tr,
+    .tabela-cards td {
+        display: block;
+        width: 100%;
+    }
+
+    .tabela-cards tr {
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 0.4rem 1rem;
+        margin-bottom: 0.75rem;
+        background: rgba(0,0,0,0.15);
+    }
+
+    .tabela-cards td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.6rem 0;
+        text-align: right;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .tabela-cards td:last-child {
+        border-bottom: 0;
+        white-space: normal;
+    }
+
+    .tabela-cards td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 0.85rem;
+        text-align: left;
+        flex: none;
+    }
+
+    .tabela-cards td[colspan] { justify-content: center; }
+    .tabela-cards td[colspan]::before { content: none; }
+
+    .tabela-cards select { width: auto; min-width: 150px; }
+
+    .admin-grid { grid-template-columns: 1fr; }
+    .history-list li { gap: 0.75rem; }
+}
+
+/* Celulares pequenos */
+@media (max-width: 480px) {
+    h1 { font-size: 2.4rem; line-height: 1.05; }
+    h2 { font-size: 2rem; }
+    .auth-card { padding: 1.5rem; }
+    .agenda-panel { padding: 1.1rem; }
+    .brand strong { font-size: 0.9rem; }
 }

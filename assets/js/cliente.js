@@ -43,12 +43,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         corpoTabela.replaceChildren(...data.map(agendamento => {
             const podeCancelar = agendamento.status === 'PENDENTE' || agendamento.status === 'CONFIRMADO';
             return el('tr', {},
-                el('td', { text: agendamento.servicos ? agendamento.servicos.nome : '-' }),
-                el('td', { text: agendamento.barbeiros ? agendamento.barbeiros.nome : '-' }),
-                el('td', { text: App.formatarData(agendamento.data) }),
-                el('td', { text: App.formatarHora(agendamento.horario) }),
-                el('td', {}, el('span', { class: `status-badge ${classeStatus[agendamento.status]}`, text: agendamento.status })),
-                el('td', {}, podeCancelar
+                el('td', { 'data-label': 'Serviço', text: agendamento.servicos ? agendamento.servicos.nome : '-' }),
+                el('td', { 'data-label': 'Barbeiro', text: agendamento.barbeiros ? agendamento.barbeiros.nome : '-' }),
+                el('td', { 'data-label': 'Data', text: App.formatarData(agendamento.data) }),
+                el('td', { 'data-label': 'Hora', text: App.formatarHora(agendamento.horario) }),
+                el('td', { 'data-label': 'Status' }, el('span', { class: `status-badge ${classeStatus[agendamento.status]}`, text: agendamento.status })),
+                el('td', { 'data-label': 'Ações' }, podeCancelar
                     ? el('button', {
                         type: 'button',
                         class: 'btn btn-danger btn-small',

@@ -89,7 +89,8 @@
             if (!db) return null;
             const perfil = await App.perfil();
             if (!perfil) {
-                window.location.href = 'login.html';
+                const paginaAtual = window.location.pathname.split('/').pop() || 'index.html';
+                window.location.href = `login.html?voltar=${encodeURIComponent(paginaAtual)}`;
                 return null;
             }
             if (tipoNecessario === 'ADMIN' && perfil.tipo !== 'ADMIN') {
@@ -112,9 +113,26 @@
         const botaoMenu = document.querySelector('.nav-toggle');
         const menu = document.querySelector('.nav-menu');
         if (botaoMenu && menu) {
-            botaoMenu.addEventListener('click', function () {
-                menu.classList.toggle('open');
-                botaoMenu.setAttribute('aria-expanded', String(menu.classList.contains('open')));
+            const definirMenu = aberto => {
+                menu.classList.toggle('open', aberto);
+                botaoMenu.setAttribute('aria-expanded', String(aberto));
+                botaoMenu.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
+                botaoMenu.textContent = aberto ? '✕' : '☰';
+            };
+
+            botaoMenu.addEventListener('click', event => {
+                event.stopPropagation();
+                definirMenu(!menu.classList.contains('open'));
+            });
+            // Fecha ao escolher um link ou tocar fora do menu
+            menu.addEventListener('click', event => {
+                if (event.target.closest('a')) definirMenu(false);
+            });
+            document.addEventListener('click', event => {
+                if (menu.classList.contains('open') && !menu.contains(event.target)) definirMenu(false);
+            });
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape') definirMenu(false);
             });
         }
 

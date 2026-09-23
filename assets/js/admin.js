@@ -47,15 +47,17 @@ document.addEventListener('DOMContentLoaded', async function () {
             seletor.value = agendamento.status;
 
             return el('tr', {},
-                el('td', {},
-                    agendamento.perfis ? agendamento.perfis.nome : '-',
-                    el('small', { class: 'muted-text block', text: agendamento.perfis ? agendamento.perfis.telefone : '' })
+                el('td', { 'data-label': 'Cliente' },
+                    el('div', {},
+                        agendamento.perfis ? agendamento.perfis.nome : '-',
+                        el('small', { class: 'muted-text block', text: agendamento.perfis ? agendamento.perfis.telefone : '' })
+                    )
                 ),
-                el('td', { text: agendamento.servicos ? agendamento.servicos.nome : '-' }),
-                el('td', { text: agendamento.barbeiros ? agendamento.barbeiros.nome : '-' }),
-                el('td', { text: App.formatarData(agendamento.data) }),
-                el('td', { text: App.formatarHora(agendamento.horario) }),
-                el('td', {}, seletor)
+                el('td', { 'data-label': 'Serviço', text: agendamento.servicos ? agendamento.servicos.nome : '-' }),
+                el('td', { 'data-label': 'Barbeiro', text: agendamento.barbeiros ? agendamento.barbeiros.nome : '-' }),
+                el('td', { 'data-label': 'Data', text: App.formatarData(agendamento.data) }),
+                el('td', { 'data-label': 'Hora', text: App.formatarHora(agendamento.horario) }),
+                el('td', { 'data-label': 'Status' }, seletor)
             );
         }));
     }
