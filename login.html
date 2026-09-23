@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | Barbearia Senhores da Navalha</title>
+    <meta name="description" content="Barbearia Senhores da Navalha: cortes, barba e agendamento online.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="auth-page">
+    <div class="auth-shell">
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="index.html" class="brand-mark" aria-label="Voltar ao início">S</a>
+                <h1>Bem-vindo</h1>
+                <p>Acesse sua conta e agende seu próximo corte.</p>
+            </div>
+            <form id="loginForm">
+                <label>
+                    <span>E-mail</span>
+                    <input type="email" id="email" autocomplete="email" required>
+                </label>
+                <label>
+                    <span>Senha</span>
+                    <input type="password" id="senha" autocomplete="current-password" required>
+                </label>
+                <button type="submit" class="btn btn-primary full">Entrar</button>
+            </form>
+            <div id="status" hidden></div>
+            <div class="auth-links">
+                <a href="esqueci-senha.html">Esqueci a senha</a>
+                <a href="cadastro.html">Criar conta</a>
+                <a href="index.html">Voltar ao início</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/auth.js"></script>
+</body>
+</html>

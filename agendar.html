@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar | Barbearia Senhores da Navalha</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">S</span>
+                <div>
+                    <strong>Senhores da Navalha</strong>
+                    <small>Agendamento</small>
+                </div>
+            </a>
+            <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+            <nav class="nav-menu">
+                <a href="index.html">Site</a>
+                <a href="cliente.html">Meus agendamentos</a>
+                <a href="agendar.html">Agendar</a>
+                <a href="#" data-sair>Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-shell">
+        <section class="agenda-panel">
+            <h1>Agendar horário</h1>
+            <p>Olá, <strong id="nomeUsuario">cliente</strong>. Escolha o serviço, o barbeiro e o horário.</p>
+
+            <form id="agendarForm" class="form-grid">
+                <label>
+                    <span>Serviço</span>
+                    <select id="servico" required>
+                        <option value="">Selecione um serviço</option>
+                    </select>
+                </label>
+                <label>
+                    <span>Barbeiro</span>
+                    <select id="barbeiro" required>
+                        <option value="">Selecione um barbeiro</option>
+                    </select>
+                </label>
+                <label>
+                    <span>Data</span>
+                    <input type="date" id="data" required>
+                </label>
+                <label>
+                    <span>Horário</span>
+                    <select id="horario" required>
+                        <option value="">Selecione um horário</option>
+                    </select>
+                </label>
+                <button type="submit" class="btn btn-primary full">Confirmar agendamento</button>
+            </form>
+
+            <div id="status" hidden></div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/agendar.js"></script>
+</body>
+</html>

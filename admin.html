@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração | Barbearia Senhores da Navalha</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">S</span>
+                <div>
+                    <strong>Senhores da Navalha</strong>
+                    <small>Administração</small>
+                </div>
+            </a>
+            <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+            <nav class="nav-menu">
+                <a href="index.html">Site</a>
+                <a href="#agendamentos">Agendamentos</a>
+                <a href="#servicos">Serviços</a>
+                <a href="#barbeiros">Barbeiros</a>
+                <a href="#" data-sair>Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-shell">
+        <section class="panel-intro">
+            <h1>Painel administrativo</h1>
+            <div id="status" hidden></div>
+        </section>
+
+        <section class="cards-grid">
+            <div class="stat-card">
+                <span>Agendamentos hoje</span>
+                <strong id="totalHoje">0</strong>
+            </div>
+            <div class="stat-card accent">
+                <span>Pendentes</span>
+                <strong id="totalPendentes">0</strong>
+            </div>
+            <div class="stat-card">
+                <span>Serviços</span>
+                <strong id="totalServicos">0</strong>
+            </div>
+        </section>
+
+        <section class="agenda-panel" id="agendamentos">
+            <h2>Agendamentos</h2>
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Serviço</th>
+                            <th>Barbeiro</th>
+                            <th>Data</th>
+                            <th>Hora</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaAgendamentos">
+                        <tr><td colspan="6" class="muted-text">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="admin-grid">
+            <section class="agenda-panel" id="servicos">
+                <div class="section-header">
+                    <h2>Serviços</h2>
+                    <button type="button" class="btn btn-primary btn-small" id="novoServico">+ Novo</button>
+                </div>
+                <ul class="history-list" id="listaServicosAdmin"></ul>
+            </section>
+
+            <section class="agenda-panel" id="barbeiros">
+                <h2>Barbeiros</h2>
+                <ul class="history-list" id="listaBarbeirosAdmin"></ul>
+                <form id="barbeiroForm" class="inline-form">
+                    <input type="text" id="barbeiroNome" placeholder="Nome" aria-label="Nome do barbeiro" required>
+                    <input type="text" id="barbeiroEspecialidade" placeholder="Especialidade" aria-label="Especialidade" required>
+                    <button type="submit" class="btn btn-outline btn-small">Adicionar</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <div class="modal" id="modalServico" hidden>
+        <div class="modal-card">
+            <h3 id="modalTitulo">Editar serviço</h3>
+            <form id="servicoForm" class="form-grid">
+                <input type="hidden" id="servicoId">
+                <label>
+                    <span>Nome</span>
+                    <input type="text" id="servicoNome" required>
+                </label>
+                <label>
+                    <span>Descrição</span>
+                    <textarea id="servicoDescricao" rows="3"></textarea>
+                </label>
+                <label>
+                    <span>Valor (R$)</span>
+                    <input type="number" id="servicoValor" step="0.01" min="0" required>
+                </label>
+                <label>
+                    <span>Duração (min)</span>
+                    <input type="number" id="servicoDuracao" min="5" step="5" required>
+                </label>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="button" class="btn btn-outline" id="fecharModal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/admin.js"></script>
+</body>
+</html>

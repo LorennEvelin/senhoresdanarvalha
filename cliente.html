@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha conta | Barbearia Senhores da Navalha</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">S</span>
+                <div>
+                    <strong>Senhores da Navalha</strong>
+                    <small>Painel do cliente</small>
+                </div>
+            </a>
+            <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+            <nav class="nav-menu">
+                <a href="index.html">Site</a>
+                <a href="cliente.html">Meus agendamentos</a>
+                <a href="agendar.html">Agendar</a>
+                <a href="#" data-sair>Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-shell">
+        <section class="panel-intro">
+            <h1>Olá, <span id="nomeUsuario">cliente</span></h1>
+            <p>Acompanhe e gerencie seus agendamentos.</p>
+        </section>
+
+        <section class="cards-grid">
+            <div class="stat-card">
+                <span>Próximos agendamentos</span>
+                <strong id="proximos">0</strong>
+            </div>
+            <div class="stat-card accent">
+                <span>Novo horário</span>
+                <a class="btn btn-primary" href="agendar.html">Agendar corte</a>
+            </div>
+        </section>
+
+        <section class="agenda-panel">
+            <h2>Seus agendamentos</h2>
+            <div id="status" hidden></div>
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Serviço</th>
+                            <th>Barbeiro</th>
+                            <th>Data</th>
+                            <th>Hora</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historico">
+                        <tr><td colspan="6" class="muted-text">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/cliente.js"></script>
+</body>
+</html>
