@@ -1,6 +1,7 @@
-// Dados do seu projeto Supabase (Project Settings → API).
-// A chave "anon" é pública por natureza: quem protege os dados são as regras (RLS) do supabase.sql.
+// Dados do projeto Supabase (Project Settings → API Keys).
+// A chave "publishable" é pública por natureza: quem protege os dados são as regras (RLS) do supabase/schema.sql.
+// Nunca coloque aqui a chave "secret" / "service_role".
 window.SUPABASE_CONFIG = {
-    url: 'COLE_AQUI_A_PROJECT_URL',        // ex.: https://abcdefgh.supabase.co
-    anonKey: 'COLE_AQUI_A_ANON_PUBLIC_KEY'
+    url: 'https://etqwwhdrjtzrciwtxznb.supabase.co',
+    anonKey: 'sb_publishable_mtf0wVRFcxwP02fyVKZ_mQ_DRUrbgNe'
 };
