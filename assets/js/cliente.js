@@ -53,22 +53,25 @@ document.addEventListener('DOMContentLoaded', async function () {
                         type: 'button',
                         class: 'btn btn-danger btn-small',
                         text: 'Cancelar',
-                        onclick: () => cancelar(agendamento.id)
+                        onclick: event => cancelar(agendamento.id, event.currentTarget)
                     })
                     : el('span', { class: 'muted-text', text: '—' }))
             );
         }));
     }
 
-    async function cancelar(id) {
+    async function cancelar(id, botao) {
         if (!window.confirm('Deseja realmente cancelar este agendamento?')) return;
-        const { error } = await db.rpc('cancelar_agendamento', { p_id: id });
-        if (error) {
-            App.mensagem('status', App.traduzirErro(error), 'erro');
-            return;
+        App.carregando(botao, true, 'Cancelando...');
+        try {
+            const { error } = await App.comLimiteDeTempo(db.rpc('cancelar_agendamento', { p_id: id }));
+            if (error) throw error;
+            App.mensagem('status', 'Agendamento cancelado.');
+            carregar();
+        } catch (erro) {
+            App.mensagem('status', App.traduzirErro(erro), 'erro');
+            App.carregando(botao, false);
         }
-        App.mensagem('status', 'Agendamento cancelado.');
-        carregar();
     }
 
     carregar();

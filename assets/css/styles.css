@@ -1065,3 +1065,9 @@ h1, h2, h3 { overflow-wrap: break-word; }
     .agenda-panel { padding: 1.1rem; }
     .brand strong { font-size: 0.9rem; }
 }
+
+/* Links para seções (#agendamentos etc.) não ficam escondidos atrás do cabeçalho fixo */
+section[id] { scroll-margin-top: 96px; }
+
+select:disabled { opacity: 0.6; cursor: wait; }
+.notice:empty { display: none; }

@@ -91,12 +91,13 @@
                     <input type="text" id="barbeiroEspecialidade" placeholder="Especialidade" aria-label="Especialidade" required>
                     <button type="submit" class="btn btn-outline btn-small">Adicionar</button>
                 </form>
+                <div id="barbeiroStatus" hidden></div>
             </section>
         </div>
     </main>
 
     <div class="modal" id="modalServico" hidden>
-        <div class="modal-card">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
             <h3 id="modalTitulo">Editar serviço</h3>
             <form id="servicoForm" class="form-grid">
                 <input type="hidden" id="servicoId">
@@ -116,6 +117,7 @@
                     <span>Duração (min)</span>
                     <input type="number" id="servicoDuracao" min="5" step="5" required>
                 </label>
+                <div id="modalStatus" hidden></div>
                 <div class="modal-actions">
                     <button type="submit" class="btn btn-primary">Salvar</button>
                     <button type="button" class="btn btn-outline" id="fecharModal">Cancelar</button>

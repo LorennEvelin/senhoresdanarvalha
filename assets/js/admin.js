@@ -37,10 +37,17 @@ document.addEventListener('DOMContentLoaded', async function () {
             const seletor = el('select', {
                 'aria-label': 'Status do agendamento',
                 onchange: async event => {
-                    const { error: erro } = await db.from('agendamentos')
-                        .update({ status: event.target.value })
-                        .eq('id', agendamento.id);
-                    if (erro) App.mensagem('status', App.traduzirErro(erro), 'erro');
+                    const campo = event.target;
+                    campo.disabled = true;
+                    try {
+                        const { error: erro } = await App.comLimiteDeTempo(db.from('agendamentos')
+                            .update({ status: campo.value })
+                            .eq('id', agendamento.id));
+                        if (erro) throw erro;
+                        App.mensagem('status', `Status alterado para ${campo.value}.`);
+                    } catch (erro) {
+                        App.mensagem('status', App.traduzirErro(erro), 'erro');
+                    }
                     carregarAgendamentos();
                 }
             }, status.map(s => el('option', { value: s, text: s })));
@@ -73,14 +80,26 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('servicoDescricao').value = servico ? servico.descricao : '';
         document.getElementById('servicoValor').value = servico ? servico.valor : '';
         document.getElementById('servicoDuracao').value = servico ? servico.duracao : 30;
+        document.getElementById('modalStatus').hidden = true;
         modal.hidden = false;
+        document.getElementById('servicoNome').focus();
     }
 
-    document.getElementById('fecharModal').addEventListener('click', () => { modal.hidden = true; });
+    const fecharModal = () => {
+        modal.hidden = true;
+        App.carregando(formServico.querySelector('button[type="submit"]'), false);
+    };
+    document.getElementById('fecharModal').addEventListener('click', fecharModal);
     document.getElementById('novoServico').addEventListener('click', () => abrirModal(null));
+    // Fecha clicando fora da caixa ou com Esc
+    modal.addEventListener('click', event => { if (event.target === modal) fecharModal(); });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && !modal.hidden) fecharModal(); });
 
     formServico.addEventListener('submit', async function (event) {
         event.preventDefault();
+        const botao = formServico.querySelector('button[type="submit"]');
+        if (botao.disabled) return;
+
         const id = document.getElementById('servicoId').value;
         const dados = {
             nome: document.getElementById('servicoNome').value.trim(),
@@ -89,22 +108,28 @@ document.addEventListener('DOMContentLoaded', async function () {
             duracao: Number(document.getElementById('servicoDuracao').value)
         };
 
-        const { error } = id
-            ? await db.from('servicos').update(dados).eq('id', id)
-            : await db.from('servicos').insert(dados);
-
-        if (error) {
-            alert(App.traduzirErro(error));
-            return;
+        App.carregando(botao, true, 'Salvando...');
+        try {
+            const { error } = await App.comLimiteDeTempo(id
+                ? db.from('servicos').update(dados).eq('id', id)
+                : db.from('servicos').insert(dados));
+            if (error) throw error;
+            fecharModal();
+            App.mensagem('status', id ? 'Serviço atualizado.' : 'Serviço criado.');
+            carregarServicos();
+        } catch (erro) {
+            App.mensagem('modalStatus', App.traduzirErro(erro), 'erro');
+            App.carregando(botao, false);
         }
-        modal.hidden = true;
-        carregarServicos();
     });
 
     async function carregarServicos() {
         const { data, error } = await db.from('servicos').select('*').order('id');
         const lista = document.getElementById('listaServicosAdmin');
-        if (error) return;
+        if (error) {
+            lista.replaceChildren(el('li', { class: 'muted-text', text: 'Não foi possível carregar os serviços.' }));
+            return;
+        }
 
         document.getElementById('totalServicos').textContent = data.length;
         lista.replaceChildren(...data.map(servico =>
@@ -122,7 +147,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     async function carregarBarbeiros() {
         const { data, error } = await db.from('barbeiros').select('*').order('id');
         const lista = document.getElementById('listaBarbeirosAdmin');
-        if (error) return;
+        if (error) {
+            lista.replaceChildren(el('li', { class: 'muted-text', text: 'Não foi possível carregar os barbeiros.' }));
+            return;
+        }
 
         lista.replaceChildren(...data.map(barbeiro =>
             el('li', {},
@@ -136,18 +164,25 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     document.getElementById('barbeiroForm').addEventListener('submit', async function (event) {
         event.preventDefault();
-        const nome = document.getElementById('barbeiroNome');
-        const especialidade = document.getElementById('barbeiroEspecialidade');
-        const { error } = await db.from('barbeiros').insert({
-            nome: nome.value.trim(),
-            especialidade: especialidade.value.trim()
-        });
-        if (error) {
-            App.mensagem('status', App.traduzirErro(error), 'erro');
-            return;
+        const form = event.target;
+        const botao = form.querySelector('button[type="submit"]');
+        if (botao.disabled) return;
+
+        App.carregando(botao, true, 'Salvando...');
+        try {
+            const { error } = await App.comLimiteDeTempo(db.from('barbeiros').insert({
+                nome: document.getElementById('barbeiroNome').value.trim(),
+                especialidade: document.getElementById('barbeiroEspecialidade').value.trim()
+            }));
+            if (error) throw error;
+            form.reset();
+            App.mensagem('barbeiroStatus', 'Barbeiro adicionado.');
+            carregarBarbeiros();
+        } catch (erro) {
+            App.mensagem('barbeiroStatus', App.traduzirErro(erro), 'erro');
+        } finally {
+            App.carregando(botao, false);
         }
-        event.target.reset();
-        carregarBarbeiros();
     });
 
     carregarAgendamentos();

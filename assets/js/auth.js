@@ -45,6 +45,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('form button[type="submit"]').forEach(b => App.carregando(b, false));
     });
 
+    // Quem já está logado não precisa ver login/cadastro de novo
+    if (document.getElementById('loginForm') || document.getElementById('cadastroForm')) {
+        App.perfil().then(perfil => {
+            if (perfil) window.location.replace(perfil.tipo === 'ADMIN' ? 'admin.html' : 'cliente.html');
+        });
+    }
+
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         ligarFormulario(loginForm, 'Entrando...', async () => {

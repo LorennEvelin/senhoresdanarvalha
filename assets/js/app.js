@@ -54,6 +54,7 @@
             if (!caixa) return alert(texto);
             caixa.textContent = texto;
             caixa.className = `notice ${tipo === 'erro' ? 'notice-error' : 'notice-success'}`;
+            caixa.setAttribute('role', tipo === 'erro' ? 'alert' : 'status');
             caixa.hidden = false;
         },
 
