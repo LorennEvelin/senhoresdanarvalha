@@ -66,7 +66,7 @@
             if (/Password should be at least/i.test(texto)) return 'A senha deve ter pelo menos 6 caracteres.';
             if (/duplicate key|agendamentos_horario_unico/i.test(texto)) return 'Este horário acabou de ser ocupado. Escolha outro.';
             if (/rate limit/i.test(texto)) return 'Muitas tentativas em pouco tempo. Aguarde alguns minutos.';
-            if (/Failed to fetch|NetworkError/i.test(texto)) return 'Não foi possível conectar ao servidor. Verifique sua internet.';
+            if (/Failed to fetch|NetworkError|Load failed/i.test(texto)) return 'Não foi possível conectar ao servidor. Verifique sua internet.';
             return texto || 'Algo deu errado. Tente novamente.';
         },
 
@@ -76,12 +76,54 @@
             return data.session;
         },
 
+        // O perfil fica guardado na aba para não buscar no banco a cada página.
+        // É só para a tela: quem garante o acesso são as regras (RLS) do banco.
         async perfil() {
             const sessao = await App.sessao();
-            if (!sessao) return null;
+            if (!sessao) {
+                App.limparPerfil();
+                return null;
+            }
+
+            const chave = `perfil:${sessao.user.id}`;
+            try {
+                const guardado = sessionStorage.getItem(chave);
+                if (guardado) return JSON.parse(guardado);
+            } catch (e) { /* armazenamento bloqueado: segue buscando no banco */ }
+
             const { data, error } = await db.from('perfis').select('*').eq('id', sessao.user.id).single();
             if (error) return null;
+            try { sessionStorage.setItem(chave, JSON.stringify(data)); } catch (e) { /* ignora */ }
             return data;
+        },
+
+        limparPerfil() {
+            try {
+                Object.keys(sessionStorage).filter(k => k.startsWith('perfil:')).forEach(k => sessionStorage.removeItem(k));
+            } catch (e) { /* ignora */ }
+        },
+
+        // Trava o botão enquanto espera o servidor, mostrando o que está acontecendo
+        carregando(botao, ativo, textoCarregando = 'Aguarde...') {
+            if (!botao) return;
+            if (ativo) {
+                if (!botao.dataset.textoOriginal) botao.dataset.textoOriginal = botao.textContent;
+                botao.textContent = textoCarregando;
+                botao.disabled = true;
+                botao.setAttribute('aria-busy', 'true');
+            } else {
+                if (botao.dataset.textoOriginal) botao.textContent = botao.dataset.textoOriginal;
+                botao.disabled = false;
+                botao.removeAttribute('aria-busy');
+            }
+        },
+
+        // Evita que um pedido ao servidor fique esperando para sempre (ex.: internet caiu)
+        comLimiteDeTempo(promessa, ms = 20000) {
+            return Promise.race([
+                promessa,
+                new Promise((_, rejeitar) => setTimeout(() => rejeitar(new Error('Tempo esgotado. Verifique sua internet e tente novamente.')), ms))
+            ]);
         },
 
         // Protege páginas: sem login → vai para o login; admin/cliente no lugar errado → redireciona
@@ -101,7 +143,8 @@
         },
 
         async sair() {
-            if (db) await db.auth.signOut();
+            App.limparPerfil();
+            if (db) await db.auth.signOut().catch(() => {});
             window.location.href = 'index.html';
         }
     };

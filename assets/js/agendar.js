@@ -75,21 +75,31 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
-        const { error } = await db.from('agendamentos').insert({
-            usuario_id: perfil.id,
-            servico_id: Number(servicoSelect.value),
-            barbeiro_id: Number(barbeiroSelect.value),
-            data: dataInput.value,
-            horario: horarioSelect.value
-        });
+        const botao = form.querySelector('button[type="submit"]');
+        if (botao.disabled) return;
+        App.carregando(botao, true, 'Agendando...');
 
-        if (error) {
-            App.mensagem('status', App.traduzirErro(error), 'erro');
-            carregarHorarios();
-            return;
+        try {
+            const { error } = await App.comLimiteDeTempo(db.from('agendamentos').insert({
+                usuario_id: perfil.id,
+                servico_id: Number(servicoSelect.value),
+                barbeiro_id: Number(barbeiroSelect.value),
+                data: dataInput.value,
+                horario: horarioSelect.value
+            }));
+
+            if (error) {
+                App.mensagem('status', App.traduzirErro(error), 'erro');
+                App.carregando(botao, false);
+                carregarHorarios();
+                return;
+            }
+
+            App.mensagem('status', 'Agendamento realizado com sucesso!');
+            setTimeout(() => { window.location.href = 'cliente.html'; }, 1200);
+        } catch (erro) {
+            App.mensagem('status', App.traduzirErro(erro), 'erro');
+            App.carregando(botao, false);
         }
-
-        App.mensagem('status', 'Agendamento realizado com sucesso!');
-        setTimeout(() => { window.location.href = 'cliente.html'; }, 1200);
     });
 });
